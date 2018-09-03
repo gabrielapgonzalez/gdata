@@ -1,0 +1,53 @@
+import pandas as pd
+import pickle
+import os
+import numpy as np
+
+#Libraries setup
+os.chdir('/home/tiago/Documents/HCG_competition')
+print(os.getcwd())
+
+#Importing datasets
+train = pd.read_csv('HCG_data/application_train.csv')
+test = pd.read_csv('HCG_data/application_test.csv')
+b_1 = pd.read_csv('HCG_data/bureau.csv')
+bb_2 = pd.read_csv('HCG_data/bureau_balance.csv')
+pa_1 = pd.read_csv('HCG_data/previous_application.csv')
+pos_2 = pd.read_csv('HCG_data/POS_CASH_balance.csv')
+ip_2 = pd.read_csv('HCG_data/installments_payments.csv')
+cb_2 = pd.read_csv('HCG_data/credit_card_balance.csv')
+description = pd.read_csv("HCG_data/HomeCredit_columns_description.csv", encoding = "ISO-8859-1")
+sample = pd.read_csv('HCG_data/sample_submission.csv')
+
+n_train = {'train':train}
+n_test = {'test':test}
+n_b1 = {'b_1': b_1}
+n_bb2 = {'bb2': bb_2}
+n_pa1 = {'pa_1': pa_1}
+n_pos2 = {'pos2': pos_2}
+n_ip2 = {'ip_2': ip_2}
+n_cb2 = {'cb_2': cb_2}
+n_description = {'description':description}
+n_sample = {'sample': sample}
+
+p_train = open('n_train','wb')
+p_test = open('n_test', 'wb')
+p_b1 = open('n_b1', 'wb')
+p_bb2 = open('n_bb2', 'wb')
+p_pa1 = open('n_pa1', 'wb')
+p_pos2 = open('n_pos2', 'wb')
+p_ip2 = open('n_ip2', 'wb')
+p_cb2 = open('n_cb2', 'wb')
+p_description = open('n_description', 'wb')
+p_sample = open('n_sample', 'wb')
+
+pickle.dump(n_train, p_train)
+pickle.dump(n_test, p_test)
+pickle.dump(n_b1, p_b1)
+pickle.dump(n_bb2, p_bb2)
+pickle.dump(n_pa1, p_pa1)
+pickle.dump(n_pos2, p_pos2)
+pickle.dump(n_ip2, p_ip2)
+pickle.dump(n_cb2, p_cb2)
+pickle.dump(n_description, p_description)
+pickle.dump(n_sample, p_sample)

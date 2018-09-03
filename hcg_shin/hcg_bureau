@@ -1,0 +1,152 @@
+import pandas as pd
+import numpy as np
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+
+import dask.dataframe as dd
+
+#Libraries setup
+os.chdir('/home/tiago/Documents/HCG_competition')
+print(os.getcwd())
+pd.set_option('display.max_columns', 200)
+
+#load data
+n_b1 = open('n_b1', 'rb')
+b1 = pickle.load(n_b1)
+b1 = pd.DataFrame(b1["b_1"])
+n_bb2 = open('n_bb2', 'rb')
+bb2 = pickle.load(n_bb2)
+bb2 = pd.DataFrame(bb2["bb2"])
+n_description = open('n_description', 'rb')
+description = pickle.load(n_description)
+description = pd.DataFrame(description['description'])
+n_train = open('n_train', 'rb')
+train = pickle.load(n_train)
+train = pd.DataFrame(train["train"])
+
+#setting
+b1.columns = map(str.lower, b1.columns)
+bb2.columns = map(str.lower, bb2.columns)
+description.columns = map(str.lower, description.columns)
+#b1 = b1.set_index(['sk_id_bureau'])
+#bb2 = bb2.set_index(['sk_id_bureau'])
+train.colums = map(str.lower, train.columns)
+
+#using dask
+db1 = dd.from_pandas(b1, npartitions=8)
+dbb2 = dd.from_pandas(bb2, npartitions=8)
+#db = db1.join(dbb2, how='outer')
+
+
+dbb = dd.merge(db1, dbb2, on=['sk_id_bureau'])
+
+db_train = pd.merge(b,train, on=['sk_id_curr'])
+db_train = dd.from_pandas(b_train, npartitions=8)
+
+#exploring bureau
+#credit_active - status no credit bureau
+description.loc[124]
+b1.credit_active.isnull().sum()
+b1.groupby('credit_active').describe()
+
+#amt_annuity - moeda recodificada do credito
+description.description[125]
+b1.amt_annuity.isnull().sum()
+sns.distplot(b1.amt_annuity.dropna(), kde=True, bins=2)
+
+#days_credit - comparacao de tempo da aplicacao do home credit e do credit bureau
+description.description[126]
+b1.days_credit.isnull().sum()
+sns.distplot(b1.days_credit, kde=True, bins=20)
+
+#credit_day_overdue - dias de atraso no credit bureau
+description.description[127]
+b1.credit_day_overdue.isnull().sum()
+b1.credit_day_overdue.describe()
+sns.distplot(b1.credit_day_overdue, kde=True, bins=2)
+b1.groupby('sk_id_bureau').credit_day_overdue.mean().max()
+
+#days_credit_enddate - duracao restante dos creditos
+description.description[128]
+b1.days_credit_enddate.isnull().sum()
+b1.days_credit_enddate.describe()
+sns.distplot(b1.days_credit_enddate.dropna(), kde=True, bins=20)
+
+#days_enddate_fact - dias desde que acabou o tempo de aplicacao no home credit
+description.description[129]
+b1.days_enddate_fact.isnull().sum()
+b1.days_enddate_fact.describe()
+sns.distplot(b1.days_enddate_fact.dropna(), kde=True, bins=20)
+
+#amt_credit_max_overdue - maximo credito atrasado
+description.description[130]
+b1.amt_credit_max_overdue.isnull().sum()
+b1.amt_credit_max_overdue.describe()
+sns.distplot(b1.amt_credit_max_overdue.dropna(), kde=True, bins=2)
+
+#cnt_credit_prolong - quantas vezes o credit bureau foi prolongado
+description.description[131]
+b1.cnt_credit_prolong.isnull().sum()
+b1.cnt_credit_prolong.describe()
+sns.distplot(b1.cnt_credit_prolong, kde=True, bins=2)
+
+#amt_credit_sum - credito total
+description.description[132]
+b1.amt_credit_sum.isnull().sum()
+b1.amt_credit_sum.describe()
+sns.distplot(b1.amt_credit_sum.dropna(), kde=True, bins=2)
+
+#amt_credit_sum_debt - debito atual
+description.description[133]
+b1.amt_credit_sum_debt.isnull().sum()
+b1.amt_credit_sum_debt.describe()
+sns.distplot(b1.amt_credit_sum_debt.dropna(), kde=True, bins=20)
+
+#amt_credit_sum_limit - limite de credito
+description.description[134]
+b1.amt_credit_sum_limit.isnull().sum()
+b1.amt_credit_sum_limit.describe()
+sns.distplot(b1.amt_credit_sum_limit.dropna(), kde=True, bins=20)
+
+#amt_credit_sum_overdue - credito atrasado
+description.description[135]
+b1.amt_credit_sum_overdue.isnull().sum()
+b1.amt_credit_sum_overdue.describe()
+sns.distplot(b1.amt_credit_sum_overdue.dropna(), kde=True, bins=20)
+
+#credit_type
+description.description[136]
+b1.credit_type.isnull().sum()
+b1.groupby('credit_type').describe()
+
+#days_credit_update
+description.description[137]
+b1.days_credit_update.isnull().sum()
+b1.days_credit_update.describe()
+sns.distplot(b1.days_credit_update.dropna(), kde=True, bins=20)
+
+#amt_annuity
+description.description[138]
+b1.amt_annuity.isnull().sum()
+b1.amt_annuity.describe()
+sns.distplot(b1.amt_annuity.dropna(), kde=True, bins=20)
+
+#exploring bureau balance 2
+
+#months_balance - mes do balanco onde 0 é mais recente
+description.description[140]
+month_status = db.groupby('months_balance').status
+month_status.count().compute()
+
+#status - status of credit bureau - C = closed, X = unknown, 0 no DPD, 1 = maximal, 2 = DPD 31-60, 5 = DPD 120+ or sold
+description.description[141]
+status_count = db.groupby('sk_id_bureau').status.count()
+sns.distplot(status_count.compute(), kde=True, bins=20)
+cx015 = db.status.value_counts()
+cx015.compute()
+
+#nb = {'b':b}
+#pb = open('nb','wb')
+#pickle.dump(nb,pb)
