@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+
+#Libraries setup
+os.chdir('/home/tiago/Documents/HCG_competition')
+print(os.getcwd())
+pd.set_option('display.max_columns', 200)
+
+#load data
+n_pa1 = open('n_pa1', 'rb')
+pa1= pickle.load(n_pa1)
+pa1 = pd.DataFrame(pa1["pa_1"])
+n_pos2 = open('n_pos2', 'rb')
+pos2 = pickle.load(n_pos2)
+pos2 = pd.DataFrame(pos2["pos2"])
+n_ip2 = open('n_ip2', 'rb')
+ip2 = pickle.load(n_ip2)
+ip2 = pd.DataFrame(ip2["ip_2"])
+n_cb2 = open('n_cb2', 'rb')
+cb2 = pickle.load(n_cb2)
+cb2 = pd.DataFrame(cb2["cb_2"])
+n_description = open('n_description', 'rb')
+description = pickle.load(n_description)
+description = pd.DataFrame(description['description'])
+n_train = open('n_train', 'rb')
+train = pickle.load(n_train)
+train = pd.DataFrame(train["train"])
+
+#exploring
+pa1.columns = map(str.lower, pa1.columns)
+pos2.columns = map(str.lower, pos2.columns)
+ip2.columns = map(str.lower, ip2.columns)
+cb2.columns = map(str.lower, cb2.columns)
+train.columns = map(str.lower, train.columns);
+description.columns = map(str.lower, description.columns)
+
+#name_contract_type
+description.description[175]
+
+
+
+
+
+
+columns = pa1.columns
+columns[2]

@@ -32,18 +32,15 @@ bb2.columns = map(str.lower, bb2.columns)
 description.columns = map(str.lower, description.columns)
 #b1 = b1.set_index(['sk_id_bureau'])
 #bb2 = bb2.set_index(['sk_id_bureau'])
-train.colums = map(str.lower, train.columns)
+train.columns = map(str.lower, train.columns)
 
 #using dask
 db1 = dd.from_pandas(b1, npartitions=8)
 dbb2 = dd.from_pandas(bb2, npartitions=8)
-#db = db1.join(dbb2, how='outer')
-
-
+dtrain = dd.from_pandas(train, npartitions=8)
 dbb = dd.merge(db1, dbb2, on=['sk_id_bureau'])
+dbb.head()
 
-db_train = pd.merge(b,train, on=['sk_id_curr'])
-db_train = dd.from_pandas(b_train, npartitions=8)
 
 #exploring bureau
 #credit_active - status no credit bureau
@@ -137,14 +134,14 @@ sns.distplot(b1.amt_annuity.dropna(), kde=True, bins=20)
 
 #months_balance - mes do balanco onde 0 é mais recente
 description.description[140]
-month_status = db.groupby('months_balance').status
+month_status = dbb.groupby('months_balance').status
 month_status.count().compute()
 
 #status - status of credit bureau - C = closed, X = unknown, 0 no DPD, 1 = maximal, 2 = DPD 31-60, 5 = DPD 120+ or sold
 description.description[141]
-status_count = db.groupby('sk_id_bureau').status.count()
+status_count = dbb.groupby('sk_id_bureau').status.count()
 sns.distplot(status_count.compute(), kde=True, bins=20)
-cx015 = db.status.value_counts()
+cx015 = dbb.status.value_counts()
 cx015.compute()
 
 #nb = {'b':b}
