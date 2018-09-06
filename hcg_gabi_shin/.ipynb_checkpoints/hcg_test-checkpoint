@@ -1,0 +1,500 @@
+import pandas as pd
+import numpy as np
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+
+#Libraries setup
+os.chdir('/home/tiago/Documents/HCG_competition')
+print(os.getcwd())
+pd.set_option('display.max_columns', 200)
+
+#load data
+n_test = open('n_test', 'rb')
+test = pickle.load(n_test)
+test = pd.DataFrame(test["test"])
+n_description = open('n_description', 'rb')
+description = pickle.load(n_description)
+description = pd.DataFrame(description['description'])
+
+#exploring
+test.columns = map(str.lower, test.columns)
+description.columns = map(str.lower, description.columns)
+#test.head()
+#sns.heatmap(test.isnull(), yticklabels = False, cbar = False, cmap='viridis')
+
+#Cash of revolving loans (crédito rotativo é o crédito em caso de falta de dinheiro, têm juros mais altos)
+description['description'][2]
+test.name_contract_type.isnull().sum()
+test.groupby(test.name_contract_type).describe()
+
+# Gender M,F or XNA
+description['description'][3]
+test.code_gender.isnull().sum()
+test.groupby(test.code_gender).describe()
+
+#Flag own car: tem carro ou nao
+description['description'][4]
+test.flag_own_car.isnull().sum()
+test.groupby(test.flag_own_car).describe()
+
+#Flag own realty: tem casa ou nao
+description['description'][5]
+test.flag_own_realty.isnull().sum()
+test.groupby(test.flag_own_realty).describe()
+
+#cnt_children - transformar em binario
+description['description'][6]
+test.cnt_children.isnull().sum()
+test.groupby(test.cnt_children).describe()
+
+#amt_income_total - quanto o cliente ganha
+description['description'][7]
+test.amt_income_total.isnull().sum()
+test.amt_income_total.describe()
+plt.hist(test.amt_income_total, bins=20)
+
+#amt_credit - valor do emprestimo
+description['description'][8]
+test.amt_credit.isnull().sum()
+sns.distplot(test.amt_credit, kde=True, bins=20)
+
+#amt_credit/amt_income_total - nova feature how much people take relative to the income
+
+#amt_annuity
+description['description'][9]
+test.amt_annuity.isnull().sum()
+test.amt_annuity.describe()
+test.amt_annuity = test.amt_annuity.fillna(test.amt_annuity.mean())
+sns.distplot(test.amt_annuity, kde=True)
+
+#amt_goods_price - preço dos bens para o qual vai ser feito o empréstimo
+description['description'][10]
+test.amt_goods_price.isnull().sum()
+sns.distplot(test.amt_goods_price, kde=True)
+
+#name_type_suite - pessoa que estava acompanhando o cliente na hora de pedir o empréstimo
+description['description'][11]
+test.name_type_suite.isnull().sum()
+test.groupby(test.name_type_suite).describe()
+
+#name_income_type - de onde vem a grana
+description['description'][12]
+test.name_income_type.isnull().sum()
+test.groupby(test.name_income_type).describe()
+
+#name_education_type - grau de escolaridade
+description['description'][13]
+test.name_education_type.isnull().sum()
+test.groupby(test.name_education_type).describe()
+
+#name_family_status - estado civil
+description['description'][14]
+test.name_family_status.isnull().sum()
+test.groupby(test.name_family_status).describe()
+
+
+#name_housing_type - mora com quem
+description['description'][15]
+test.name_housing_type.isnull().sum()
+test.groupby(test.name_housing_type).describe()
+
+#region_population_relative - populacao de onde a pessoa mora
+description['description'][16]
+test.region_population_relative.isnull().sum()
+sns.distplot(test.region_population_relative, kde=True)
+
+#days_birth
+description['description'][17]
+test.days_birth.isnull().sum()
+sns.distplot(test.days_birth, kde=True)
+
+#years_birth - idade nova feature
+test['years_birth'] = test['days_birth']/365*(-1)
+sns.distplot(test.years_birth, kde=True)
+
+#days_employed - ha quantos dias a pessoa trabalha no emprego atual
+description['description'][18]
+test.days_employed.isnull().sum()
+sns.distplot(test.days_employed, kde=True)
+
+#days_registration - quantos dias antes do emprestimo o cliente mudou o seu registro... do que??
+description['description'][19]
+test.days_registration.isnull().sum()
+sns.distplot(test.days_registration, kde=True)
+
+#days_id_publish - qntos dias antes o cliente mudou de documento de identidade
+description['description'][20]
+test.days_id_publish.isnull().sum()
+sns.distplot(test.days_id_publish, kde=True)
+
+#own_car_age - idade do carro - transformar em categorico
+description['description'][21]
+test.own_car_age.isnull().sum()
+test.own_car_age.describe()
+test.own_car_age = test.own_car_age.fillna(0)
+sns.distplot(test.own_car_age, kde=True)
+
+#flag_mobil - possui celular ou nao
+description['description'][22]
+test.flag_mobil.isnull().sum()
+test.groupby(test.flag_mobil).describe()
+
+#flag_emp_phone - se o cliente deu o telefone de casa
+description['description'][24]
+test.flag_emp_phone.isnull().sum()
+test.groupby(test.flag_emp_phone).describe()
+
+#flag_work_phone - se o cliente due o telefone de trabalho
+description['description'][23]
+test.flag_work_phone.isnull().sum()
+test.groupby(test.flag_work_phone).describe()
+
+#flag_cont_mobile - se o telefone era alcancavel
+description['description'][25]
+test.flag_cont_mobile.isnull().sum()
+test.groupby(test.flag_cont_mobile).describe()
+
+#flag_phone - se o cliente deu o tel de casa
+description['description'][26]
+test.flag_phone.isnull().sum()
+test.groupby(test.flag_phone).describe()
+
+#flag_email - se o cliente deu um email
+description['description'][27]
+test.flag_email.isnull().sum()
+test.groupby(test.flag_email).describe()
+
+#occupation_type - trabalho cargo
+description['description'][28]
+test.occupation_type.isnull().sum()
+test.occupation_type = test.occupation_type.fillna('no_provided')
+test.groupby(test.occupation_type).describe()
+
+#cnt_fam_members - quantos membros de familia
+description['description'][29]
+test.cnt_fam_members.isnull().sum()
+test.cnt_fam_members = test.cnt_fam_members.fillna('1.0')
+test.groupby(test.cnt_fam_members).describe()
+
+#region_rating_client - rating da empresa
+description['description'][30]
+test.region_rating_client.isnull().sum()
+test.groupby(test.region_rating_client).describe()
+
+#region_rating_client_w_city - rating da empresa da cidade
+description['description'][31]
+test.region_rating_client_w_city.isnull().sum()
+test.groupby(test.region_rating_client_w_city).describe()
+
+#weekday_appr_process_start - dia da semana
+description['description'][32]
+test.weekday_appr_process_start.isnull().sum()
+test.groupby(test.weekday_appr_process_start).describe()
+
+#hour_appr_process_start - hora
+description['description'][33]
+test.hour_appr_process_start.isnull().sum()
+test.groupby(test.hour_appr_process_start).describe()
+
+#reg_region_not_live_region - se o endereco dado bate com o endereco real
+description['description'][34]
+test.reg_region_not_live_region.isnull().sum()
+test.groupby(test.reg_region_not_live_region).describe()
+
+#reg_region_not_work_region - se o endereco de trabalho bate com o endereco real
+description['description'][35]
+test.reg_region_not_work_region.isnull().sum()
+test.groupby(test.reg_region_not_work_region).describe()
+
+#live_region_not_work_region - se o endereco de contato nao bate com o endereco de trabalho
+description['description'][36]
+test.live_region_not_work_region.isnull().sum()
+test.groupby(test.live_region_not_work_region).describe()
+
+#reg_city_not_live_city - se o endereco nao bate com a cidade
+description['description'][38]
+test.reg_city_not_live_city.isnull().sum()
+test.groupby(test.reg_city_not_live_city).describe()
+
+#live_city_not_work_city
+description['description'][39]
+test.live_city_not_work_city.isnull().sum()
+test.groupby(test.live_city_not_work_city).describe()
+
+#organization_type - tipo de empresa
+description['description'][40]
+test.organization_type.isnull().sum()
+test.groupby(test.organization_type).describe()
+
+#ext_source_1
+description['description'][41]
+test.ext_source_1.isnull().sum()
+sns.distplot(test.ext_source_1.dropna(), kde=True)
+sns.boxplot(x='target', y='ext_source_1', data=test)
+
+#ext_source_2
+description['description'][42]
+test.ext_source_2.isnull().sum()
+sns.distplot(test.ext_source_2.dropna(), kde=True)
+
+#ext_source_3
+description['description'][43]
+test.ext_source_3.isnull().sum()
+sns.distplot(test.ext_source_3.dropna(), kde=True)
+
+#apartments_avg - media do tamanho do apartamento, area comum, idade do predio, etc
+description['description'][44]
+test.apartments_avg.isnull().sum()
+sns.distplot(test.apartments_avg.dropna(), kde=True)
+
+#basementarea_avg
+description['description'][45]
+test.basementarea_avg.isnull().sum()
+sns.distplot(test.basementarea_avg.dropna(), kde=True)
+
+#years_beginexpluatation_avg
+description['description'][46]
+test.years_beginexpluatation_avg.isnull().sum()
+sns.distplot(test.years_beginexpluatation_avg.dropna(), kde=True)
+
+#years_build_avg
+description['description'][47]
+test.years_build_avg.isnull().sum()
+sns.distplot(test.years_build_avg.dropna(), kde=True)
+
+#commonarea_avg
+description['description'][48]
+test.commonarea_avg.isnull().sum()
+sns.distplot(test.commonarea_avg.dropna(), kde=True)
+
+#elevators_avg
+description['description'][49]
+test.elevators_avg.isnull().sum()
+sns.distplot(test.elevators_avg.dropna(), kde=True)
+
+#entrances_avg
+description['description'][50]
+test.entrances_avg.isnull().sum()
+sns.distplot(test.entrances_avg.dropna(), kde=True)
+
+#floorsmax_avg
+description['description'][51]
+test.floorsmax_avg.isnull().sum()
+sns.distplot(test.floorsmax_avg.dropna(), kde=True)
+
+#floorsmin_avg
+description['description'][52]
+test.floorsmin_avg.isnull().sum()
+sns.distplot(test.floorsmin_avg.dropna(), kde=True)
+
+#landarea_avg
+description['description'][53]
+test.landarea_avg.isnull().sum()
+sns.distplot(test.landarea_avg.dropna(), kde=True)
+
+#livingapartments_avg
+description['description'][54]
+test.livingapartments_avg.isnull().sum()
+sns.distplot(test.livingapartments_avg.dropna(), kde=True)
+
+#livingarea_avg
+description['description'][55]
+test.livingarea_avg.isnull().sum()
+sns.distplot(test.livingarea_avg.dropna(), kde=True)
+
+#nonlivingapartments_avg
+description['description'][56]
+test.nonlivingapartments_avg.isnull().sum()
+sns.distplot(test.nonlivingapartments_avg.dropna(), kde=True)
+
+#nonlivingarea_avg
+description['description'][57]
+test.nonlivingarea_avg.isnull().sum()
+sns.distplot(test.nonlivingarea_avg.dropna(), kde=True)
+
+#mode - 58 a 72
+#median - 59 a 85
+
+#fondkapremont_mode
+description['description'][86]
+test.fondkapremont_mode.isnull().sum()
+test.groupby(test.fondkapremont_mode).describe()
+
+#housetype_mode
+description['description'][88]
+test.housetype_mode.isnull().sum()
+test.groupby(test.housetype_mode).describe()
+
+#wallsmaterial_mode
+description['description'][89]
+test.wallsmaterial_mode.isnull().sum()
+test.groupby(test.wallsmaterial_mode).describe()
+
+#emergencystate_mode
+description['description'][90]
+test.emergencystate_mode.isnull().sum()
+test.groupby(test.emergencystate_mode).describe()
+
+#obs_30_cnt_social_circle - observacoes com 30 dias devido a inadimplencia
+description['description'][91]
+test.obs_30_cnt_social_circle.isnull().sum()
+test.groupby(test.obs_30_cnt_social_circle).describe()
+
+#def_30_cnt_social_circle -
+description['description'][92]
+test.def_30_cnt_social_circle.isnull().sum()
+test.groupby(test.def_30_cnt_social_circle).describe()
+
+#obs_60_cnt_social_circle
+description['description'][93]
+test.obs_60_cnt_social_circle.isnull().sum()
+test.groupby(test.obs_60_cnt_social_circle).describe()
+
+#def_60_cnt_social_circle
+description['description'][94]
+test.def_60_cnt_social_circle.isnull().sum()
+test.groupby(test.def_60_cnt_social_circle).describe()
+
+#days_last_phone_change
+description['description'][95]
+test.days_last_phone_change.isnull().sum()
+test.days_last_phone_change = test.days_last_phone_change.fillna(0)
+sns.distplot(test.days_last_phone_change.dropna(), kde=True)
+
+#flag_document_2
+description['description'][96]
+test.flag_document_2.isnull().sum()
+test.groupby(test.flag_document_2).describe()
+
+#flag_document_3
+description['description'][97]
+test.flag_document_3.isnull().sum()
+test.groupby(test.flag_document_3).describe()
+
+#flag_document_4
+description['description'][98]
+test.flag_document_4.isnull().sum()
+test.groupby(test.flag_document_4).describe()
+
+#flag_document_5
+description['description'][99]
+test.flag_document_5.isnull().sum()
+test.groupby(test.flag_document_5).describe()
+
+#flag_document_6
+description['description'][100]
+test.flag_document_6.isnull().sum()
+test.groupby(test.flag_document_6).describe()
+
+#flag_document_7
+description['description'][101]
+test.flag_document_7.isnull().sum()
+test.groupby(test.flag_document_7).describe()
+
+#flag_document_8
+description['description'][102]
+test.flag_document_8.isnull().sum()
+test.groupby(test.flag_document_8).describe()
+
+#flag_document_9
+description['description'][103]
+test.flag_document_9.isnull().sum()
+test.groupby(test.flag_document_9).describe()
+
+#flag_document_10
+description['description'][104]
+test.flag_document_10.isnull().sum()
+test.groupby(test.flag_document_10).describe()
+
+#flag_document_11
+description['description'][105]
+test.flag_document_11.isnull().sum()
+test.groupby(test.flag_document_11).describe()
+
+#flag_document_12
+description['description'][106]
+test.flag_document_12.isnull().sum()
+test.groupby(test.flag_document_12).describe()
+
+#flag_document_13
+description['description'][107]
+test.flag_document_13.isnull().sum()
+test.groupby(test.flag_document_13).describe()
+
+#flag_document_14
+description['description'][108]
+test.flag_document_14.isnull().sum()
+test.groupby(test.flag_document_14).describe()
+
+#flag_document_15
+description['description'][109]
+test.flag_document_15.isnull().sum()
+test.groupby(test.flag_document_15).describe()
+
+#flag_document_16
+description['description'][110]
+test.flag_document_16.isnull().sum()
+test.groupby(test.flag_document_16).describe()
+
+#flag_document_17
+description['description'][111]
+test.flag_document_17.isnull().sum()
+test.groupby(test.flag_document_17).describe()
+
+#flag_document_18
+description['description'][112]
+test.flag_document_18.isnull().sum()
+test.groupby(test.flag_document_18).describe()
+
+#flag_document_19
+description['description'][113]
+test.flag_document_19.isnull().sum()
+test.groupby(test.flag_document_19).describe()
+
+#flag_document_20
+description['description'][114]
+test.flag_document_20.isnull().sum()
+test.groupby(test.flag_document_20).describe()
+
+#flag_document_21
+description['description'][115]
+test.flag_document_21.isnull().sum()
+test.groupby(test.flag_document_21).describe()
+
+#amt_req_credit_bureau_hour -
+description['description'][116]
+test.amt_req_credit_bureau_hour.isnull().sum()
+test.groupby(test.amt_req_credit_bureau_hour).describe()
+
+#amt_req_credit_bureau_day
+description['description'][117]
+test.amt_req_credit_bureau_day.isnull().sum()
+test.groupby(test.amt_req_credit_bureau_day).describe()
+
+#nova feature - divisao do day/hour before application
+
+#amt_req_credit_bureau_week
+description['description'][118]
+test.amt_req_credit_bureau_week.isnull().sum()
+test.groupby(test.amt_req_credit_bureau_week).describe()
+
+#amt_req_credit_bureau_mon
+description['description'][119]
+test.amt_req_credit_bureau_mon.isnull().sum()
+test.groupby(test.amt_req_credit_bureau_mon).describe()
+
+#amt_req_credit_bureau_qrt
+description['description'][120]
+test.amt_req_credit_bureau_qrt.isnull().sum()
+test.groupby(test.amt_req_credit_bureau_qrt).describe()
+
+#amt_req_credit_bureau_year
+description['description'][121]
+test.amt_req_credit_bureau_year.isnull().sum()
+test.groupby(test.amt_req_credit_bureau_year).describe()
+
+columns = test.columns
+columns[121]
+test.head()
