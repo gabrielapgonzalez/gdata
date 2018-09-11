@@ -1,4 +1,4 @@
-import numpy as np
+#import numpy as np
 import pandas as pd
 import logging
 import io
@@ -58,25 +58,26 @@ def agg_table(maindf,
 
 		col = []
 		for coluna in list(aggdf.columns)[1:-1]:
-			if func in d_cat_func[str(dtype(aggdf.coluna))]:
+			if func in d_cat_func[str(aggdf[coluna].dtype)]:
 				col.append(coluna)
 		
 		df_gb_func = gb_df[col].agg(func)
 
 		for coluna in list(df_gb_func.columns):
-			df_gb_func = df_gb.func.rename({coluna: "{}{}{}".format(coluna,"_", func)})
+			df_gb_func = df_gb_func.rename(columns = {coluna: "{}{}{}".format(coluna,"_", func)})
 
 		logging.info("DF da funcao {} criado".format(func))
 
 		maindf = maindf.join(df_gb_func)
 
 		logging.info("DF da funcao {} agregado".format(func))
-
+		print(list(df_gb_func.columns))
+		#print(list(maindf.columns))
 	return maindf
 
 dfinal = agg_table(maindf = test, 
-				aggdf = bureau, 
-				drop_list = None, 
+				aggdf = br, 
+				drop_list = drop_bureau, 
 				functions = functions_teste)
 
-print(pfinal)
+print(dfinal.head())
