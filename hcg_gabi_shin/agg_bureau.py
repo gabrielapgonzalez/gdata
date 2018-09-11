@@ -14,21 +14,26 @@ logging.basicConfig(stream=sys.stdout,
                     datefmt='%m/%d/%Y %I:%M:%S %p')
 logger = logging.getLogger('agg_hcg')
 
-
+#FIX ME
 train = pd.read_csv('application_train.csv')
 test = pd.read_csv('application_test.csv')
 br = pd.read_csv('bureau.csv')
 
 logging.info("Read_csv concluido")
 
+#Declaração de lista de funções a serem consideradas
 functions = ["count", "first", "last", "mode", "sum", "mean", "mad", "min", "max", "std"]
+functions_teste = ["count", "sum"]
 
+
+#Declaração de funções a serem consideradas por tipo de variavel
 d_cat_func = {"object": ["count", "first", "last", "mode"],
 				"float64": ["count", "first", "last", "sum", "mean", "mad", "min", "max", "std"],
 				"int64": ["count", "first", "last", "mode", "sum", "min", "max"]}
 
-functions_teste = ["count", "sum"]
+#Variaveis a serem dropadas da função de agregação
 drop_bureau = ["SK_ID_BUREAU"]
+
 
 def agg_table(maindf, 
 				aggdf, 
@@ -48,36 +53,46 @@ def agg_table(maindf,
 	maindf: tabela resultado da agregcao de aggdf a maindf de acordo com as funcoes definidas
 	""" 
 
+	#Dropar colunas do df a ser agregado
 	aggdf = aggdf.drop(drop_list, axis = 1)
+	
+	#Criação do groupby geral
 	gb_df = aggdf.groupby("SK_ID_CURR")
+	
+	#Set index da variavel que linka dfs
 	maindf = maindf.set_index("SK_ID_CURR")
 
 	logging.info("DFs prontos para calculo de gb e agregacao")
 
 	for func in functions: 
-
+		
+		#Cria lista de colunas a serem consideradas de acordo com função
 		col = []
 		for coluna in list(aggdf.columns)[1:-1]:
 			if func in d_cat_func[str(aggdf[coluna].dtype)]:
 				col.append(coluna)
 		
+		#Calculo gb da função 
 		df_gb_func = gb_df[col].agg(func)
-
+		
+		
+		#Inclusão da função no nome da variavel
 		for coluna in list(df_gb_func.columns):
 			df_gb_func = df_gb_func.rename(columns = {coluna: "{}{}{}".format(coluna,"_", func)})
 
 		logging.info("DF da funcao {} criado".format(func))
-
+		
+		#Join df principal e agg
 		maindf = maindf.join(df_gb_func)
 
 		logging.info("DF da funcao {} agregado".format(func))
-		print(list(df_gb_func.columns))
-		#print(list(maindf.columns))
+		
 	return maindf
-
+	
+#Teste do script
 dfinal = agg_table(maindf = test, 
 				aggdf = br, 
 				drop_list = drop_bureau, 
 				functions = functions_teste)
 
-print(dfinal.head())
+#Fazer o comadna da função da final e salvar como pickle ptrain.npy e ptest.npy
