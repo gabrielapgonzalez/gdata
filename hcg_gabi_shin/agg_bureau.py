@@ -59,7 +59,7 @@ def agg_table(maindf,
 		col = []
 		for coluna in list(aggdf.columns)[1:-1]:
 			if func in d_cat_func[str(dtype(aggdf.coluna))]:
-                col.append(coluna)
+				col.append(coluna)
 		
 		df_gb_func = gb_df[col].agg(func)
 
