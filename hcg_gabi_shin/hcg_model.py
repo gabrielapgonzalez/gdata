@@ -19,8 +19,8 @@ logging.basicConfig(stream=sys.stdout,
 logger = logging.getLogger('model_hcg')
 
 
-train = np.load(ptrain.py)
-teste = np.load(ptest.py)
+train = np.load("ptrain.npy")
+teste = np.load("ptest.npy")
 
 def prep_data(train = train):
 

@@ -68,7 +68,7 @@ def agg_table(maindf,
 		
 		#Cria lista de colunas a serem consideradas de acordo com função
 		col = []
-		for coluna in list(aggdf.columns)[1:-1]:
+		for coluna in list(aggdf.columns)[1:]:
 			if func in d_cat_func[str(aggdf[coluna].dtype)]:
 				col.append(coluna)
 		
@@ -89,10 +89,12 @@ def agg_table(maindf,
 		
 	return maindf
 	
-#Teste do script
-dfinal = agg_table(maindf = test, 
+	
+testfinal = agg_table(maindf = test, 
 				aggdf = br, 
 				drop_list = drop_bureau, 
 				functions = functions_teste)
 
-#Fazer o comadna da função da final e salvar como pickle ptrain.npy e ptest.npy
+dic = {"teste": testefinal}
+
+np.save("ptest.npy")
