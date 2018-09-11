@@ -95,6 +95,6 @@ testfinal = agg_table(maindf = test,
 				drop_list = drop_bureau, 
 				functions = functions_teste)
 
-dic = {"teste": testefinal}
+dic = {"teste": testfinal}
 
 np.save("ptest.npy")
